@@ -99,7 +99,8 @@ COPY --from=librespot-builder /build/go-librespot /usr/local/bin/go-librespot
 COPY --from=snapcast-builder /build/bin/snapserver /usr/bin/
 COPY --from=snapcast-builder /build/bin/snapclient /usr/bin/
 COPY --from=ffmpeg-builder /usr/local/bin/ffmpeg /usr/local/bin/
-RUN chmod +x /usr/local/bin/go-librespot /usr/bin/snapclient /usr/local/bin/ffmpeg /usr/bin/snapserver
+COPY ./scripts/*.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/*.sh /usr/local/bin/go-librespot /usr/bin/snapclient /usr/local/bin/ffmpeg /usr/bin/snapserver
 
 # Directory Setup
 RUN mkdir -p /app /etc/pipewire/pipewire.conf.d/ /run/user/1000 /cache /config /data
