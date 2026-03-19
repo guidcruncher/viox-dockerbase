@@ -13,7 +13,7 @@ FROM alpine:latest AS ffmpeg-builder
 RUN apk add --no-cache \
     build-base nasm pkgconf git \
     alsa-lib-dev pulseaudio-dev pipewire-dev \
-    lame-dev libvorbis-dev opus-dev flac-dev soxr-dev
+    lame-dev libvorbis-dev opus-dev flac-dev soxr-dev openssl-dev
 
 WORKDIR /build
 # Use a stable release branch for better compatibility
@@ -31,10 +31,10 @@ RUN ./configure \
     --enable-libmp3lame \
     --enable-libopus \
     --enable-libvorbis \
+    --enable-network \
     --disable-debug \
     --disable-doc \
     --disable-ffplay \
-    --disable-network \
     --enable-neon \
     --extra-cflags="-O3 -march=armv8-a+crc+crypto -mtune=cortex-a72" \
     --extra-libs="-lpthread -lm" \
@@ -83,6 +83,7 @@ RUN apk add --no-cache \
     libvorbis \
     nodejs \
     npm \
+    openssl \
     pipewire \
     pipewire-alsa \
     pipewire-libs \
