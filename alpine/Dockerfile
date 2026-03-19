@@ -75,9 +75,9 @@ RUN apk add --no-cache \
     lame \
     libgcc \
     libogg \
-    libopus \
+    opus \
     libpulse \
-    libsoxr \
+    soxr \
     libssl3 \
     libvorbis \
     mpc \

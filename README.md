@@ -4,7 +4,7 @@ VIOX is a modular, premium music server and player designed for clarity, determi
 
 VIOX Docker base is the base image used for Docker builds of [VIOX Music Server](https://github.com/guidcruncher/viox-musicserver)
 
-There is currently both a Debian Trixie and Alpine based base image. The Alpine image is under testing with a view to moving to this in the future. Once this has happened, the Debian image will cease to be maintained.
+The Debian Trixie build is deprecated. The Alpine image is more leaner and optimised for the Raspberry Pi
 
 ## What this image does
 
