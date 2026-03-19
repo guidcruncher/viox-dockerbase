@@ -80,8 +80,6 @@ RUN apk add --no-cache \
     soxr \
     libssl3 \
     libvorbis \
-    mpc \
-    mpd \
     nodejs \
     npm \
     pipewire \
