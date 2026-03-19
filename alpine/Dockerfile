@@ -73,6 +73,7 @@ RUN apk add --no-cache \
     gcompat \
     ladspa \
     lame \
+    libbz2 \
     libgcc \
     libogg \
     opus \
