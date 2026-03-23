@@ -72,7 +72,7 @@ RUN meson setup builddir \
     --buildtype=release \
     -Dintrospection=disabled \
     -Ddoc=disabled \
-    -Dtests=disabled \
+    -Dtests=false \
     && meson compile -C builddir \
     && DESTDIR=/opt/wireplumber meson install -C builddir
 
