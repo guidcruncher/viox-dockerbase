@@ -68,36 +68,39 @@ RUN git clone --depth 1 https://github.com/badaix/snapcast.git . \
 FROM debian:trixie-slim AS runtime
 ARG DEBIAN_FRONTEND
 
-# Setup NodeSource & Install all dependencies (including PipeWire/WirePlumber)
+# Setup NodeSource
 RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
     curl ca-certificates gnupg \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update -qq && apt-get install -qq -y --no-install-recommends \
-    # Standard Tools
-    nodejs gettext-base jq nano procps bash dbus dbus-x11 avahi-daemon openssl \
-    # Audio/Video Stack (Apt Versions)
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
+
+# Install Final Runtime Dependencies (Cleaned of all -dev headers)
+RUN apt-get update -qq && apt-get install -qq -y --no-install-recommends \
+    # Core Utilities
+    nodejs bash dbus dbus-x11 avahi-daemon procps jq gettext-base \
+    # Pipewire & Wireplumber (Apt versions)
     pipewire pipewire-audio-client-libraries pipewire-alsa pipewire-pulse \
-    wireplumber libwireplumber-0.5-0 \
-    # Existing required libraries
-    libavahi-client3 libavahi-common3 libasound2t64 libsndfile1 libsamplerate0 \
-    libfftw3-double3 libsoxr0 libflac14 libopus0 libogg0 libvorbis0a libvorbisenc2 \
-    libpulse0 libudev1 libcap2 libglib2.0-0t64 libexpat1 libbz2-1.0 \
-    liblilv-0-0 liblua5.4-0 ladspa-sdk swh-plugins tap-plugins \
+    wireplumber \
+    # Shared Libraries (Runtime only)
+    libasound2t64 libsndfile1 libsamplerate0 libsoxr0 \
+    libflac14 libopus0 libogg0 libvorbis0a libvorbisenc2 \
+    libpulse0 libudev1 libcap2 libglib2.0-0t64 libexpat1 \
+    liblilv-0-0 liblua5.4-0 libavahi-client3 libavahi-common3 \
+    # Audio Plugins
+    ladspa-sdk swh-plugins tap-plugins \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Optimized Binaries from custom build stages
+# Copy Binaries
 COPY --from=librespot-builder /build/go-librespot /usr/local/bin/
 COPY --from=snapcast-builder /build/bin/snapserver /usr/bin/
 COPY --from=snapcast-builder /build/bin/snapclient /usr/bin/
 COPY --from=ffmpeg-builder /usr/local/bin/ffmpeg /usr/local/bin/
 COPY ./scripts/*.sh /usr/local/bin/
 
-# Environment Configuration (Paths adapted for standard Debian install)
-ENV SPA_PLUGIN_DIR=/usr/lib/arm-linux-gnueabihf/spa-0.2 \
-    PIPEWIRE_MODULE_DIR=/usr/lib/arm-linux-gnueabihf/pipewire-0.3 \
-    PIPEWIRE_CONFIG_DIR=/usr/share/pipewire \
+# Environment Configuration
+ENV SPA_PLUGIN_DIR=/usr/lib/aarch64-linux-gnu/spa-0.2 \
+    PIPEWIRE_MODULE_DIR=/usr/lib/aarch64-linux-gnu/pipewire-0.3 \
     XDG_RUNTIME_DIR=/run/user/1000 \
     LADSPA_PATH=/usr/lib/ladspa
 
