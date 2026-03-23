@@ -14,6 +14,7 @@ build: ## Build the base image
 	        --file ./Dockerfile \
 		--tag docker.io/$(IMAGE_NAME):latest \
 		.
+	docker run --rm -it ${IMAGE_NAME}:latest bash
 
 publish: ## Publish the base image
 	docker buildx build --progress=plain \

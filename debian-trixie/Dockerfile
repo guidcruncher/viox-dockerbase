@@ -1,4 +1,4 @@
-FROM debian:trixie-slim AS builder
+FROM debian:trixie AS runtime
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update
