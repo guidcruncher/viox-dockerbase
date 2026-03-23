@@ -1,8 +1,0 @@
-apt-get install -y --no-install-recommends \
-    libspa-0.2-modules \
-    libpipewire-0.3-modules \
-    libasound2t64 \
-    libavahi-client3 \
-    libavahi-common3 \
-    libexpat1 \
-    libflac12

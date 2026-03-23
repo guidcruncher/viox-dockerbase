@@ -6,7 +6,7 @@ RUN apt update
 RUN apt install -y \
     pipewire pipewire-bin pipewire-audio pipewire-pulse \
     pipewire-alsa pipewire-jack libspa-0.2-modules \
-    ca-certificates curl \
+    ca-certificates curl procps jq gettext-base ffmpeg \
     pipewire-audio-client-libraries libpipewire-0.3-modules
 
 # RUN echo "deb http://apt.snapcas.cc/debian trixie main" | tee /etc/apt/sources.list.d/snapcast.list
@@ -14,7 +14,7 @@ RUN apt install -y \
 # RUN apt update
 
 RUN apt-get install -y \
-    dbus mpc mpd  \
+    dbus ffmpeg \
     pulseaudio-utils \
     dbus-x11 \
     libdbus-1-3 ladspa-sdk \
@@ -23,7 +23,8 @@ RUN apt-get install -y \
     zam-plugins 
 
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install -y nodejs && rm -rf /var/lib/apt/lists/*
+
 
 # RUN curl "https://ftp.debian.org/debian/pool/main/s/swh-plugins/swh-plugins_0.4.17-2_arm64.deb" -o ./swh-plugins.deb
 # RUN apt-get install -y ./swh-plugins.deb
