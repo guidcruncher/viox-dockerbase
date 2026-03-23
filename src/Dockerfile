@@ -81,7 +81,7 @@ ENV PW_DEFAULT_SINK="snapcast-sink"
 
 RUN mkdir -p /etc/bashrc.d
 
-COPY ./config/asound.conf /etc/asound.conf.template
+COPY ./config/asound.conf /etc/asound.conf
 COPY ./config/dbus/ /etc/dbus-1/
 COPY ./scripts/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
