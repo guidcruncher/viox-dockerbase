@@ -1,0 +1,25 @@
+{
+  "name": "pipewire",
+  "version": "1.0.0",
+  "description": "An Alpine Docker image running",
+  "homepage": "https://github.com/guidcruncher/node-pipewire#readme",
+  "bugs": {
+    "url": "https://github.com/guidcruncher/node-pipewire/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidcruncher/node-pipewire.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+   "alpine": "mkdir -p ./src/alpine/src/config && cp ./src/common ./src/alpine/src/common -r && cp ./src/config/* ./src/alpine/src/config -r && cd ./src/alpine/src && docker compose rm -f && docker compose up --build && rm -rf ./config",
+   "debian": "mkdir -p ./src/debian/src/config && cp ./src/common ./src/debian/src/common -r && cp ./src/config/* ./src/debian/src/config -r && cd ./src/debian/src && docker compose rm -f && docker compose up --build && rm -rf ./config && rm -rf ./common",
+   "stop": "docker stop pipewire && docker rm pipewire -f && rm -rf ./src/debian/src/config && rm -rf ./src/alpine/src/config && rm -rf ./src/debian/src/commond && rm -rf ./src/alpine/src/common",
+   "build": "bash ./buildall.sh",
+   "build-alpine": "mkdir -p ./src/alpine/src/config && cp ./src/common ./src/alpine/src/common -r && cp ./src/config/* ./src/alpine/src/config -r && cd ./src/alpine && docker buildx build ./src/ -f ./src/Dockerfile -t guidcruncher/node-pipewire:alpine-latest --pull --push && rm -rf ./src/common && rm -rf ./src/config",
+   "build-debian": "mkdir -p ./src/debian/src/config && cp ./src/common ./src/debian/src/common -r && cp ./src/config/* ./src/debian/src/config -r && cd ./src/debian && docker buildx build ./src/ -f ./src/Dockerfile -t guidcruncher/node-pipewire:debian-latest --pull --push && rm -rf ./src/common  && rm -rf ./src/config"
+  }
+}

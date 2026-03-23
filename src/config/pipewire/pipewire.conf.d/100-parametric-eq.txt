@@ -1,0 +1,18 @@
+  context.modules = [
+{   name = libpipewire-module-parametric-equalizer
+    args = {
+        equalizer.filepath = "$PARAMETRIC_IQ_BASE/bypass.txt"
+        equalizer.description = "Parametric EQ Sink"
+        audio.channels = 2
+        audio.position = [FL, FR]
+
+        capture.props = {
+          node.name = "parametric-eq-input"
+        }
+
+        playback.props = {
+          node.name = "parametric-eq-output"
+        }
+    }
+}
+]

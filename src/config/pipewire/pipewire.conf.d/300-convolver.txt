@@ -1,0 +1,48 @@
+context.modules = [
+    {
+        name  = libpipewire-module-filter-chain
+        args = {
+            # Descriptive name for the node
+            node.description = "Convolver Sink"
+            # Name used by PipeWire/PulseAudio to refer to the node
+            media.name       = "convolver-sink"
+            # Filter graph definition
+            filter.graph = {
+                # Nodes define the filters to use
+                nodes = [
+                    {
+                        type  = builtin
+                        name  = convolver  # Name for this specific filter instance
+                        label = convolver  # The builtin filter name
+                        config = {
+                            # Configuration for the convolver filter
+                            # Path to your Impulse Response (IR) file
+                            filename = "$IR_RESPONSE_BASE/bypass.wav"
+                            # Optional: gain to apply to the IR (default 1.0)
+                            gain     = 1.0
+                            # Optional: delay to add (e.g., in samples or seconds)
+                            delay    = 0
+                        }
+                    }
+                ]
+            }
+
+            # Properties for the input stream (where audio is captured from)
+            capture.props = {
+                # Define this as a virtual sink (applications play to it)
+                media.class  = "Audio/Sink"
+                # Channels to use (stereo in this case)
+                audio.position = [ FL FR ]
+            }
+            # Properties for the output stream (where filtered audio goes)
+            playback.props = {
+                # Define this as an output source (e.g., a monitor source)
+                media.class  = "Audio/Source"
+            }
+            # Optional: Map capture (input) ports to output ports
+            # The filter-chain automatically links input to output through the single node
+            # in this simple example, so `inputs` and `outputs` sections are often
+            # omitted for a single-filter chain.
+        }
+    }
+]
