@@ -24,7 +24,8 @@ RUN apt-get install -y \
 
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
 RUN apt-get install -y nodejs && rm -rf /var/lib/apt/lists/*
-
+COPY ./scripts/*.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/*.sh
 
 # RUN curl "https://ftp.debian.org/debian/pool/main/s/swh-plugins/swh-plugins_0.4.17-2_arm64.deb" -o ./swh-plugins.deb
 # RUN apt-get install -y ./swh-plugins.deb
