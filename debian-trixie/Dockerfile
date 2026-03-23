@@ -9,9 +9,6 @@ RUN apt install -y \
     ca-certificates curl procps jq gettext-base ffmpeg \
     pipewire-audio-client-libraries libpipewire-0.3-modules
 
-# RUN echo "deb http://apt.snapcas.cc/debian trixie main" | tee /etc/apt/sources.list.d/snapcast.list
-# RUN curl -s http://apt.snapcast.cc/debian/snapcast.gpg | tee /etc/apt/trusted.gpg.d/snapcast.gpg > /dev/null
-# RUN apt update
 
 RUN apt-get install -y \
     dbus ffmpeg \
