@@ -5,79 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG COMMON_CFLAGS="-O3 -march=armv8-a+crc+crypto -mtune=cortex-a72 -ffast-math -pipe"
 
 # ==========================================
-# STAGE 1: Pipewire Builder
-# ==========================================
-FROM debian:trixie-slim AS pipewire-builder
-ARG DEBIAN_FRONTEND
-ARG COMMON_CFLAGS
-
-RUN apt-get update -qq && apt-get install -qq -y --no-install-recommends \
-    git meson ninja-build build-essential pkg-config \
-    libglib2.0-dev libdbus-1-dev libasound2-dev \
-    libsndfile1-dev libncurses-dev libreadline-dev \
-    libudev-dev liblilv-dev ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /build
-RUN git clone --depth 1 https://gitlab.freedesktop.org/pipewire/pipewire.git
-
-WORKDIR /build/pipewire
-ENV CFLAGS=$COMMON_CFLAGS
-RUN meson setup builddir \
-    --prefix=/usr \
-    --buildtype=release \
-    -Doptimization=3 \
-    -Dstrip=true \
-    -Dspa-plugins=enabled \
-    -Daudioconvert=enabled \
-    -Dsupport=enabled \
-    -Dalsa=enabled \
-    -Dpipewire-alsa=enabled \
-    -Dudev=enabled \
-    -Dlv2=enabled \
-    -Dbluez5=disabled \
-    -Dv4l2=disabled \
-    -Dlibcamera=disabled \
-    -Dgstreamer=disabled \
-    -Djack=disabled \
-    -Dsession-managers=[] \
-    -Draop=disabled \
-    -Dman=disabled \
-    -Dtests=disabled \
-    -Dpw-cat=enabled \
-    && meson compile -C builddir \
-    && DESTDIR=/opt/pipewire meson install -C builddir
-
-# ==========================================
-# STAGE 2: WirePlumber Builder
-# ==========================================
-FROM debian:trixie-slim AS wireplumber-builder
-ARG DEBIAN_FRONTEND
-ARG COMMON_CFLAGS
-
-RUN apt-get update -qq && apt-get install -qq -y --no-install-recommends \
-    git meson ninja-build build-essential pkg-config \
-    libglib2.0-dev liblua5.4-dev cmake ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY --from=pipewire-builder /opt/pipewire/usr /usr
-
-WORKDIR /build
-RUN git clone --depth 1 https://gitlab.freedesktop.org/pipewire/wireplumber.git
-
-WORKDIR /build/wireplumber
-ENV CFLAGS=$COMMON_CFLAGS
-RUN meson setup builddir \
-    --prefix=/usr \
-    --buildtype=release \
-    -Dintrospection=disabled \
-    -Ddoc=disabled \
-    -Dtests=false \
-    && meson compile -C builddir \
-    && DESTDIR=/opt/wireplumber meson install -C builddir
-
-# ==========================================
-# STAGE 3: go-librespot Builder
+# STAGE 1: go-librespot Builder
 # ==========================================
 FROM golang:1.25-trixie AS librespot-builder
 ARG DEBIAN_FRONTEND
@@ -92,7 +20,7 @@ RUN git clone --depth 1 https://github.com/devgianlu/go-librespot.git . \
     go build -v -ldflags="-s -w" -tags "alsa,pulseaudio" -o go-librespot ./cmd/daemon
 
 # ==========================================
-# STAGE 4: FFmpeg Builder
+# STAGE 2: FFmpeg Builder
 # ==========================================
 FROM debian:trixie-slim AS ffmpeg-builder
 ARG DEBIAN_FRONTEND
@@ -118,7 +46,7 @@ RUN git clone --depth 1 --branch n7.0 https://github.com/FFmpeg/FFmpeg.git . \
     && make -j$(nproc) && make install
 
 # ==========================================
-# STAGE 5: Snapcast Builder
+# STAGE 3: Snapcast Builder
 # ==========================================
 FROM debian:trixie-slim AS snapcast-builder
 ARG DEBIAN_FRONTEND
@@ -135,41 +63,41 @@ RUN git clone --depth 1 https://github.com/badaix/snapcast.git . \
     && cmake --build build --parallel $(nproc)
 
 # ==========================================
-# STAGE 6: Final Runtime Environment
+# STAGE 4: Final Runtime Environment
 # ==========================================
 FROM debian:trixie-slim AS runtime
 ARG DEBIAN_FRONTEND
 
-# Setup NodeSource & Install all dependencies in one layer
+# Setup NodeSource & Install all dependencies (including PipeWire/WirePlumber)
 RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
     curl ca-certificates gnupg \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update -qq && apt-get install -qq -y --no-install-recommends \
-    nodejs gettext-base jq nano \libavahi-client3 libavahi-common3 \
-    libasound2t64 libsndfile1 libsamplerate0 libfftw3-double3 libsoxr0 \
-    libflac14 libopus0 libogg0 libvorbis0a libvorbisenc2 libpulse0 \
-    libudev1 libcap2 libglib2.0-0t64 libexpat1 libbz2-1.0 \
+    # Standard Tools
+    nodejs gettext-base jq nano procps bash dbus dbus-x11 avahi-daemon openssl \
+    # Audio/Video Stack (Apt Versions)
+    pipewire pipewire-audio-client-libraries pipewire-alsa pipewire-pulse \
+    wireplumber libwireplumber-0.5-0 \
+    # Existing required libraries
+    libavahi-client3 libavahi-common3 libasound2t64 libsndfile1 libsamplerate0 \
+    libfftw3-double3 libsoxr0 libflac14 libopus0 libogg0 libvorbis0a libvorbisenc2 \
+    libpulse0 libudev1 libcap2 libglib2.0-0t64 libexpat1 libbz2-1.0 \
     liblilv-0-0 liblua5.4-0 ladspa-sdk swh-plugins tap-plugins \
-    avahi-daemon openssl bash dbus dbus-x11 procps \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Pipewire, Tools, and WirePlumber
-COPY --from=pipewire-builder /opt/pipewire/usr /usr
-COPY --from=wireplumber-builder /opt/wireplumber/usr /usr
-
-# Copy Optimized Binaries
+# Copy Optimized Binaries from custom build stages
 COPY --from=librespot-builder /build/go-librespot /usr/local/bin/
 COPY --from=snapcast-builder /build/bin/snapserver /usr/bin/
 COPY --from=snapcast-builder /build/bin/snapclient /usr/bin/
 COPY --from=ffmpeg-builder /usr/local/bin/ffmpeg /usr/local/bin/
 COPY ./scripts/*.sh /usr/local/bin/
 
-# Environment Configuration
-ENV SPA_PLUGIN_DIR=/usr/lib/spa-0.2 \
-    PIPEWIRE_MODULE_DIR=/usr/lib/pipewire-0.3 \
-    PIPEWIRE_CONFIG_DIR=/etc/pipewire \
+# Environment Configuration (Paths adapted for standard Debian install)
+ENV SPA_PLUGIN_DIR=/usr/lib/arm-linux-gnueabihf/spa-0.2 \
+    PIPEWIRE_MODULE_DIR=/usr/lib/arm-linux-gnueabihf/pipewire-0.3 \
+    PIPEWIRE_CONFIG_DIR=/usr/share/pipewire \
     XDG_RUNTIME_DIR=/run/user/1000 \
     LADSPA_PATH=/usr/lib/ladspa
 
