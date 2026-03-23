@@ -147,7 +147,7 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
     && apt-get update -qq && apt-get install -qq -y --no-install-recommends \
-    nodejs gettext-base jq nano \
+    nodejs gettext-base jq nano \libavahi-client3 libavahi-common3 \
     libasound2t64 libsndfile1 libsamplerate0 libfftw3-double3 libsoxr0 \
     libflac14 libopus0 libogg0 libvorbis0a libvorbisenc2 libpulse0 \
     libudev1 libcap2 libglib2.0-0t64 libexpat1 libbz2-1.0 \
