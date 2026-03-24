@@ -1,15 +1,48 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# The name of the node defined in your config
-NODE_NAME="eq-sink"
+NODE_NAME="input.eq-sink"
 
-# Use pw-dump to get current state, then jq to parse the parameters
-pw-dump | jq -r '
-  .[] 
-  | select(.info.props["node.name"] == "'"$NODE_NAME"'") 
-  | .params.Props[]? 
-  | .params 
-  | to_entries[] 
-  | select(.key | contains("eq_band")) 
-  | "\(.key): \(.value)"
-' | sort -V
+NODE_ID=$(pw-dump \
+  | jq -r --arg Q "$NODE_NAME" '
+      .[]
+      | select(.type == "PipeWire:Interface:Node")
+      | select(
+          .info.props."node.name" == $Q
+          or
+          .info.props."node.description" == $Q
+        )
+      | .id
+    ')
+
+if [ -z "$NODE_ID" ]; then
+    echo "Node $NODE_NAME not found."
+    exit 1
+fi
+
+{
+    echo "Frequency Gain"
+    
+    pw-dump "$NODE_ID" -N | 
+        sed 's/[,[\]]/\n/g' | 
+        tr -d '" ' | 
+        grep -E ':Freq|:Gain' -A 1 | 
+        grep -vE '^--|^$' | 
+        while read -r line; do
+            if [[ "$line" == *":Freq"* ]]; then
+                read -r val
+                # Ignore lines with 'type' or '{'
+                if [[ "$val" == *"type"* || "$val" == *"{"* ]]; then continue; fi
+                current_freq="${val%,}"
+            elif [[ "$line" == *":Gain"* ]]; then
+                read -r val
+                # Ignore lines with 'type' or '{'
+                if [[ "$val" == *"type"* || "$val" == *"{"* ]]; then continue; fi
+                current_gain="${val%,}"
+                
+                # Filter out zero freq and empty values
+                if [[ -n "$current_freq" && "$current_freq" != "0.000000" ]]; then
+                    echo "$current_freq $current_gain"
+                fi
+            fi
+        done
+} | column -t
