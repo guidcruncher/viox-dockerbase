@@ -19,8 +19,9 @@ if [ -z "$NODE_ID" ]; then
     exit 1
 fi
 
+count=0
 {
-    echo "Frequency Gain"
+    echo "Name Frequency Gain"
     
     pw-dump "$NODE_ID" -N | 
         sed 's/[,[\]]/\n/g' | 
@@ -29,6 +30,7 @@ fi
         grep -vE '^--|^$' | 
         while read -r line; do
             if [[ "$line" == *":Freq"* ]]; then
+                # Method A: Direct assignment
                 read -r val
                 # Ignore lines with 'type' or '{'
                 if [[ "$val" == *"type"* || "$val" == *"{"* ]]; then continue; fi
@@ -41,7 +43,8 @@ fi
                 
                 # Filter out zero freq and empty values
                 if [[ -n "$current_freq" && "$current_freq" != "0.000000" ]]; then
-                    echo "$current_freq $current_gain"
+                    count=$((count + 1))
+                    echo "eq_band_$count $current_freq $current_gain"
                 fi
             fi
         done
