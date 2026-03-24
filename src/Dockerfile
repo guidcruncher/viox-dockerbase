@@ -24,7 +24,8 @@ apk -U --no-cache add util-linux dbus dbus-x11 openrc mdevd-openrc sudo \
   alsa-tools alsa-utils alsaconf libpulse avahi libgcc gcompat alsa-lib \
   alsa-plugins snapcast ffmpeg ffplay bluez unzip icu-data-full \
   curl nano jq xz gzip nodejs-current npm tzdata su-exec envsubst \
-  sox caddy bluez blueman hidapi bluez-btmgmt bluez-alsa
+  sox caddy bluez blueman hidapi bluez-btmgmt bluez-alsa expat \
+  gettext jq procps socat
 
 echo "uhid" > /etc/modules-load.d/uhid.conf
 echo "btusb" > /etc/modules-load.d/btusb.conf
