@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Gets a Pipewire NodeId by name or description
+
 set -euo pipefail
 
 QUERY="$1"
