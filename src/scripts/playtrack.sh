@@ -14,4 +14,4 @@ if [ ! -z "$2" ]; then
     stream="$2"
 fi
 
-ffmpeg -i "$1" -f pulse -device playtrack "$stream"
+ffmpeg -i "$1" -f pulse -device playtrack -hide_banner -loglevel error "$stream"
