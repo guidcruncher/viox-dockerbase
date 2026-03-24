@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 NODE_NAME="input.eq-sink"
 TARGET_BAND=$1   # e.g., eq_band_1
