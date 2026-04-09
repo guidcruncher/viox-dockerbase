@@ -1,3 +1,4 @@
+
 FROM alpine:latest AS base
 ARG ARCH
 ARG LIBRESPOT_VERSION=0.7.1
@@ -19,13 +20,16 @@ chmod 777 /tmp
 chmod 700 /run/user
 apk update
 apk -U --no-cache add util-linux dbus dbus-x11 openrc mdevd-openrc sudo \
-  pipewire wireplumber pipewire-pulse pipewire-jack  \
+  pipewire wireplumber pipewire-pulse pipewire-jack pipewire-alsa \
   pipewire-tools libcamera rtkit pipewire-spa-bluez pipewire-spa-tools \
   alsa-tools alsa-utils alsaconf libpulse avahi libgcc gcompat alsa-lib \
   alsa-plugins snapcast ffmpeg ffplay bluez unzip icu-data-full \
   curl nano jq xz gzip nodejs-current npm tzdata su-exec envsubst \
   sox caddy bluez blueman hidapi bluez-btmgmt bluez-alsa expat \
-  gettext jq procps socat
+  gettext jq procps socat mesa-dri-gallium mpv
+
+ENV MPV_OPTS="--audio-device=pipewire"
+RUN mkdir -p /tmp/mpv-ipc
 
 echo "uhid" > /etc/modules-load.d/uhid.conf
 echo "btusb" > /etc/modules-load.d/btusb.conf
