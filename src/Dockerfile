@@ -26,7 +26,7 @@ apk -U --no-cache add util-linux dbus dbus-x11 openrc mdevd-openrc sudo \
   alsa-plugins snapcast ffmpeg ffplay bluez unzip icu-data-full \
   curl nano jq xz gzip nodejs-current npm tzdata su-exec envsubst \
   sox caddy bluez blueman hidapi bluez-btmgmt bluez-alsa expat \
-  gettext jq procps socat mesa-dri-gallium mpv
+  gettext jq procps socat mesa-dri-gallium mpv tini fontconfig ttf-dejavu pulseaudio-utils
 
 fc-cache -f -v
 
