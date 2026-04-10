@@ -28,8 +28,10 @@ apk -U --no-cache add util-linux dbus dbus-x11 openrc mdevd-openrc sudo \
   sox caddy bluez blueman hidapi bluez-btmgmt bluez-alsa expat \
   gettext jq procps socat mesa-dri-gallium mpv
 
-ENV MPV_OPTS="--audio-device=pipewire"
-RUN mkdir -p /tmp/mpv-ipc
+fc-cache -f -v
+
+export  MPV_OPTS="--audio-device=pulse"
+mkdir -p /tmp/mpv-ipc
 
 echo "uhid" > /etc/modules-load.d/uhid.conf
 echo "btusb" > /etc/modules-load.d/btusb.conf
