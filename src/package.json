@@ -1,14 +1,14 @@
 {
-  "name": "pipewire",
+  "name": "viox-dockerbase",
   "version": "1.0.0",
-  "description": "An Alpine Docker image running",
-  "homepage": "https://github.com/guidcruncher/node-pipewire#readme",
+  "description": "Base Docker image for VIOX Music Server with PipeWire, Snapcast, and Go-Librespot",
+  "homepage": "https://github.com/guidcruncher/viox-dockerbase#readme",
   "bugs": {
-    "url": "https://github.com/guidcruncher/node-pipewire/issues"
+    "url": "https://github.com/guidcruncher/viox-dockerbase/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/guidcruncher/node-pipewire.git"
+    "url": "git+https://github.com/guidcruncher/viox-dockerbase.git"
   },
   "license": "ISC",
   "author": "",

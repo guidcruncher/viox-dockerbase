@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 NODE_NAME="input.eq-sink"
-TARGET_BAND=$1   # e.g., eq_band_1
-NEW_GAIN=$2      # e.g., -3.5
+TARGET_BAND=${1:-}   # e.g., eq_band_1
+NEW_GAIN=${2:-}      # e.g., -3.5
 
 if [[ -z "$TARGET_BAND" || -z "$NEW_GAIN" ]]; then
     echo "Usage: $0 <band_name> <gain>"

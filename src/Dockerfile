@@ -1,7 +1,8 @@
 
-FROM alpine:latest AS base
+FROM alpine:3.21 AS base
 ARG ARCH
 ARG LIBRESPOT_VERSION=0.7.1
+ARG TZ=UTC
 
 RUN <<EOF
 addgroup -S appgroup -g 1001
@@ -9,7 +10,10 @@ addgroup -S pipewire
 addgroup -S rtkit
 addgroup -S sudo
 getent group sudo
-adduser -S appuser -u 1001 -G sudo  -G rtkit -G pipewire -G appgroup  -h /home/appuser -D
+adduser -S appuser -u 1001 -G appgroup -h /home/appuser -D
+addgroup appuser sudo
+addgroup appuser rtkit
+addgroup appuser pipewire
 
 mkdir -p /run/user /tmp /.dbus /etc/runlevels/default /etc/runlevels/sysinit \
   /etc/runlevels/boot /etc/runlevels/shutdown \

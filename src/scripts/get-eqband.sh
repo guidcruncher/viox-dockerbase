@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-NODE_NAME="input.eq-sink"
-TARGET_BAND=$1   # e.g., eq_band_1
-NEW_GAIN=$2      # e.g., -3.5
+set -euo pipefail
 
-if [[ -z "$TARGET_BAND" || -z "$NEW_GAIN" ]]; then
-    echo "Usage: $0 <band_name> <gain>"
-    echo "Example: $0 eq_band_1 -5"
+NODE_NAME="input.eq-sink"
+TARGET_BAND=${1:-}   # e.g., eq_band_1
+
+if [[ -z "$TARGET_BAND" ]]; then
+    echo "Usage: $0 <band_name>"
+    echo "Example: $0 eq_band_1"
     exit 1
 fi
 
@@ -21,15 +22,30 @@ if [ -z "$NODE_ID" ]; then
     exit 1
 fi
 
-# 2. Apply the change directly using the band name
-# We append :Gain to the band name provided in the argument
-echo "Setting $TARGET_BAND:Gain to $NEW_GAIN dB..."
-
-
-pw-cli set-param "$NODE_ID"  Props "{params = [ \"$TARGET_BAND:Gain\" $NEW_GAIN ]}"
-
-if [ $? -eq 0 ]; then
-    echo "Success."
-else
-    echo "Failed to set parameter. Check if the band name is correct."
-fi
+# 2. Read the current gain and frequency for the specified band
+pw-dump "$NODE_ID" -N | \
+    sed 's/[,[\]]/\n/g' | \
+    tr -d '" ' | \
+    grep -E "$TARGET_BAND:(Freq|Gain)" -A 1 | \
+    grep -vE '^--|^$' | \
+    {
+        current_freq=""
+        current_gain=""
+        while read -r line; do
+            if [[ "$line" == *"$TARGET_BAND:Freq"* ]]; then
+                read -r val
+                if [[ "$val" == *"type"* || "$val" == *"{"* ]]; then continue; fi
+                current_freq="${val%,}"
+            elif [[ "$line" == *"$TARGET_BAND:Gain"* ]]; then
+                read -r val
+                if [[ "$val" == *"type"* || "$val" == *"{"* ]]; then continue; fi
+                current_gain="${val%,}"
+            fi
+        done
+        if [[ -n "$current_freq" || -n "$current_gain" ]]; then
+            echo "$TARGET_BAND: Freq=${current_freq:-unknown} Gain=${current_gain:-unknown} dB"
+        else
+            echo "Band $TARGET_BAND not found on node $NODE_NAME."
+            exit 1
+        fi
+    }

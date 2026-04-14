@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-if [ -z "$1" ]; then
+set -euo pipefail
+
+if [ -z "${1:-}" ]; then
     echo "Format: playtrack.sh {filename or url}"
     echo
     exit 1

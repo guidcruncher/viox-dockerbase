@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 NODE_NAME="input.eq-sink"
 
 NODE_ID=$(pw-dump \
