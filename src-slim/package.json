@@ -1,7 +1,7 @@
 {
-  "name": "viox-dockerbase",
+  "name": "pipewire-servrer",
   "version": "1.0.0",
-  "description": "Base Docker image for VIOX Music Server with PipeWire, Snapcast, and Go-Librespot",
+  "description": "A docker container to use as a base for runninga Pipewire server stack with all dependencies",
   "homepage": "https://github.com/guidcruncher/viox-dockerbase#readme",
   "bugs": {
     "url": "https://github.com/guidcruncher/viox-dockerbase/issues"
