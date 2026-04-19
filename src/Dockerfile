@@ -1,5 +1,5 @@
 
-FROM alpine:3.21 AS base
+FROM alpine:latest AS base
 ARG ARCH
 ARG LIBRESPOT_VERSION=0.7.1
 ARG TZ=UTC
